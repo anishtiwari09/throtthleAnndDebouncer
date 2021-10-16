@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+
+        #searching,#movie-display{
+            width:60%;
+            margin:auto;
+            margin-top:2rem;    
+        }
+        #movie-display{
+            width:20%;
+        }
+        #movie-display p{
+            font-size:26px;
+            margin:10px;
+        }
+      form label{
+          font-size:30px;
+      }
+      form input{
+          width:60%;
+          font-size:25px;
+          height:30px;
+      }
+
+        
+    </style>
+</head>
+
+<body>
+    
+        <div id="searching">
+            <form>
+                <label>Movie Name: </label>
+                <input type="text" id="movie">
+               
+            </form>
+
+        </div>
+        <div id="movie-display">
+
+        </div>
+    
+
+   
+    <script>
+        function loadMovie(name) {
+            //  name=2016
+            
+            return fetch(`http://www.omdbapi.com/?s=${name}&apikey=30fb2d5c&`).then(
+                function (response) {
+                    // console.log(response.json())
+                    return response.json()
+                }
+            ).catch(function (err) {
+                console.log('error')
+            })
+        }
+        //loadMovie('ven').then((res) => {
+          //  console.log(res)
+        //})
+        window.addEventListener('load',()=>{
+            let movie=document.getElementById('movie')
+            const throttleCallback=throttle(fn,1000)
+            movie.addEventListener('keyup',throttleCallback)
+        })
+        
+        async function handleSearch()
+        {
+            try{
+            let search=await loadMovie(movie.value)
+            console.log(search)
+           if(search.Response=='True') 
+          displayResult(search.Search)
+          else if(search.Error=='Movie not found!')
+          notFound()
+            }
+            catch(e)
+            {
+                console.log(e)
+            }
+        }
+function displayResult(Search)
+{
+    let container=document.getElementById('movie-display')
+    container.innerHTML=null
+    let div=document.createElement('div')
+    for(result of Search)
+    {
+        
+        let card=createCard(result)  
+        div.append(card)      
+    }
+    container.append(div)
+}
+function createCard(result)
+{
+    let p=document.createElement('p')
+    p.innerHTML=`${result.Title} ${result.Year}`
+    return p;
+}
+function throttle(fn,delay)
+{
+    let lastCall=Date.now();
+    return function(val){
+        let now=Date.now()
+        if(now-lastCall>delay)
+        {
+            lastCall=Date.now()
+            fn(val)
+        }
+    }
+}
+const fn=()=>{
+            
+    handleSearch()
+}
+const notFound=()=>{
+    const container=document.getElementById('movie-display')
+    container.innerHTML=null
+    let h2=document.createElement('h2')
+    h2.innerHTML="result not found"
+    container.append(h2)
+}
+    </script>
+</body>
+
+</html>
