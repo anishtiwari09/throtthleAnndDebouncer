@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinite Scrolling</title>
+    <style>
+        body{
+            overflow-y: scroll;
+        }
+        #item{
+            width:100%;;
+            text-align: center;
+        }
+        #item > div > div{
+            font-size:20px;
+            margin-top:0.5rem;
+        }
+        h2{
+            position: fixed;
+        }
+    </style>
+</head>
+<body>
+    <h2 id='current'>1</h2>
+    <div id="item"></div>
+ 
+</body>
+<script>
+    let count=1;
+    function addItem()
+    {
+        const container=document.getElementById('item')
+        const div=document.createElement('div')
+        for(let i=0;i<25;i++)
+        {
+            document.getElementById('current').innerHTML=count
+
+            console.log('count:',count)
+            let item=document.createElement('div')
+            item.textContent=`Items ${count++}`
+            div.append(item)
+        }
+        container.append(div)
+        
+    }
+function scrollFunction()
+{
+    console.log('scrollheight: ',document.documentElement.scrollHeight)
+    console.log('scrolly: ',window.scrollY)
+    console.log('innerheight: ',window.innerHeight)
+if((window.scrollY + window.innerHeight)>=document.documentElement.scrollHeight){    
+        addItem()
+        
+    } 
+}
+    window.addEventListener('load',()=>{
+        const debouncerFunction=debouncer(fn,1000)
+        window.addEventListener('scroll',debouncerFunction)
+    })
+addItem()
+function debouncer(fn,delay)
+{
+    let id;
+    return ()=>
+    {
+        id && clearTimeout(id)
+        id=setTimeout(()=>fn(),delay)
+    }
+}
+const fn=()=>{
+    scrollFunction()
+}
+</script>
+</html>
